@@ -4,22 +4,138 @@ output:
   html_document:
     keep_md: true
 ---
+```{r echo = F}
 
+knitr::opts_chunk$set(echo = T)
 
-## Loading and preprocessing the data
+```
+# Loading and Preprocessing the Data
 
+I download the activity dataset from the link given by the assignment. I then unzip the file, and read it in. I also load required packages that will be used.
 
+```{r}
+library(ggplot2, quietly = T)
+library(data.table, quietly = T)
 
-## What is mean total number of steps taken per day?
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",
+              destfile = "activity.zip")
 
+unzip("activity.zip")
+```
 
+The activity file was downloaded on `r Sys.time()`. I will use the data.table package to do the required calculations. 
 
-## What is the average daily activity pattern?
+```{r}
+dat = read.csv("activity.csv")
 
+dat = data.table(dat)
+setkey(dat,date)
+```
 
+The dataset has the following format
+```{r}
+summary(dat)
+```
 
-## Imputing missing values
+# Performing Calculations
 
+## What is the Mean Total Number of Steps Taken Per Day?
 
+Lets calculate the total number of steps taken per day
+```{r}
+totalstepsbyday = dat[,list("total_steps" = sum(steps,na.rm = T)), by = date]
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
+Let's look at a histogram of the total number of steps per day.
+```{r}
+qplot(total_steps, data = totalstepsbyday, geom = "histogram",
+      main = "Histogram of Total Number of Steps per Day\n")
+```
+
+Let's calculate the mean and the median of total number of steps per day.
+```{r}
+dat[,list("median number of steps per day" = median(steps,na.rm = T),
+          "mean number of steps per day" = mean(steps,na.rm = T))]
+```
+
+## What is the Average Daily Activity Pattern
+
+Lets explore the average number of steps taken, averaged accross all days.
+```{r}
+avgstepsperinterval = dat[,list("avg_steps_interval" = mean(steps, na.rm = T)), by = interval]
+
+qplot(interval, avg_steps_interval, data = avgstepsperinterval, main = "Average Steps By Interval\n", xlab = "Interval", ylab = "Average Number of Steps", geom = c("line"))
+```
+
+The `r avgstepsperinterval[which(avg_steps_interval == max(avg_steps_interval)),interval]` interval has the has on average the maximum number of steps
+```{r}
+avgstepsperinterval[which(avg_steps_interval == max(avg_steps_interval)),]
+
+```
+
+## Imputing Missing Values
+
+The total number of missing values by each field is
+```{r}
+colSums(is.na(dat))
+```
+This means there are `r sum(colSums(is.na(dat)))` rows out of `r nrow(dat)` that have missing data.
+
+Will fill in those missing values for each data point by using the average number of steps for that interval.
+```{r}
+avgstepsperinterval = data.table(avgstepsperinterval)
+setkey(avgstepsperinterval,interval)
+
+imputeddat = copy(dat)
+# missing values in steps
+missingStepsData = is.na(imputeddat$steps)
+# convert steps to double so that we can assign the mean to missing values
+imputeddat[, steps := as.double(steps)]
+imputeddat[missingStepsData,steps := (avgstepsperinterval[.(interval),avg_steps_interval])]
+
+# A spot check for some values to ensure the assignment was correct
+
+avgstepsperinterval[.(0)]
+imputeddat[missingStepsData & interval == 0]
+# interval 0 looks correct
+
+avgstepsperinterval[.(35)]
+imputeddat[missingStepsData & interval == 35]
+# interval 35 looks correct
+
+avgstepsperinterval[.(20)]
+imputeddat[missingStepsData & interval == 20]
+# interval 20 looks correct
+```
+
+Lets calculate the total number of steps taken per day after imputing missing values.
+```{r}
+imputedtotalstepsbyday = imputeddat[,list("total_steps" = sum(steps,na.rm = T)), by = date]
+```
+
+Let's look at a histogram of the total number of steps per day aftering imputing missing values.
+```{r}
+qplot(total_steps, data = imputedtotalstepsbyday, geom = "histogram",
+      main = "Histogram of Total Number of Steps per Day\n")
+```
+
+Let's calculate the mean and the median of total number of steps per day after imputing missing values.
+```{r}
+imputeddat[,list("median number of steps per day" = median(steps,na.rm = T),
+          "mean number of steps per day" = mean(steps,na.rm = T))]
+```
+
+## Are there Differences In Activity Patterns Between Weekdays and Weekends?
+
+We will explore differences in activity patterns between weekdays and weekends. 
+
+Start by creating a factor nothing whether a day is a weekday or weekend, and then plot the average number of steps taken per interval, on weekdays and weekends.
+
+```{r}
+imputeddat[,dayofweek := weekdays(as.Date(date))]
+imputeddat[, type := factor(dayofweek == "Saturday" | dayofweek == "Sunday", labels = c("Weekday","Weekend"))]
+
+imputedavgnumstepsbydaytype = imputeddat[,.("avg_num_steps" = mean(steps, na.rm = T)), keyby = .(type, interval)]
+
+qplot(x = interval, y = avg_num_steps, data = imputedavgnumstepsbydaytype, facets = type ~ ., geom = "line")
+```

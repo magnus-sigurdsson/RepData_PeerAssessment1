@@ -7,7 +7,7 @@ output:
 
 # Loading and Preprocessing the Data
 
-I download the activity dataset from the link given by the assignment. I then unzip the file, and read it in. I also load required packages.
+I download the activity dataset from the link given by the assignment. I then unzip the file, and read it in. I also load required packages that will be used.
 
 
 ```r
@@ -38,7 +38,7 @@ download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zi
 unzip("activity.zip")
 ```
 
-The activity file was downloaded on 2015-02-14 13:35:58. I will use the data.table package to do the required calculations. 
+The activity file was downloaded on 2015-02-14 13:43:54. I will use the data.table package to do the required calculations. 
 
 
 ```r
