@@ -206,28 +206,15 @@ hr {
 <p>I download the activity dataset from the link given by the assignment. I then unzip the file, and read it in. I also load required packages that will be used.</p>
 
 <pre><code class="r">library(ggplot2, quietly = T)
-</code></pre>
+library(data.table, quietly = T)
 
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.1.2
-</code></pre>
-
-<pre><code class="r">library(data.table, quietly = T)
-</code></pre>
-
-<pre><code>## Warning: package &#39;data.table&#39; was built under R version 3.1.2
-</code></pre>
-
-<pre><code>## data.table 1.9.4  For help type: ?data.table
-## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
-</code></pre>
-
-<pre><code class="r">download.file(&quot;http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;,
+download.file(&quot;http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;,
               destfile = &quot;activity.zip&quot;)
 
 unzip(&quot;activity.zip&quot;)
 </code></pre>
 
-<p>The activity file was downloaded on 2015-02-14 13:43:54. I will use the data.table package to do the required calculations. </p>
+<p>The activity file was downloaded on 2015-02-14 14:01:17. I will use the data.table package to do the required calculations. </p>
 
 <pre><code class="r">dat = read.csv(&quot;activity.csv&quot;)
 
@@ -272,12 +259,12 @@ setkey(dat,date)
 
 <p>Let&#39;s calculate the mean and the median of total number of steps per day.</p>
 
-<pre><code class="r">dat[,list(&quot;median number of steps per day&quot; = median(steps,na.rm = T),
-          &quot;mean number of steps per day&quot; = mean(steps,na.rm = T))]
+<pre><code class="r">totalstepsbyday[,list(&quot;median number of steps per day&quot; = median(total_steps,na.rm = T),
+          &quot;mean number of steps per day&quot; = mean(total_steps,na.rm = T))]
 </code></pre>
 
 <pre><code>##    median number of steps per day mean number of steps per day
-## 1:                              0                      37.3826
+## 1:                          10395                      9354.23
 </code></pre>
 
 <h2>What is the Average Daily Activity Pattern</h2>
@@ -446,12 +433,12 @@ avgstepsperinterval[.(20)]
 
 <p>Let&#39;s calculate the mean and the median of total number of steps per day after imputing missing values.</p>
 
-<pre><code class="r">imputeddat[,list(&quot;median number of steps per day&quot; = median(steps,na.rm = T),
-          &quot;mean number of steps per day&quot; = mean(steps,na.rm = T))]
+<pre><code class="r">imputedtotalstepsbyday[,list(&quot;median number of steps per day&quot; = median(total_steps,na.rm = T),
+          &quot;mean number of steps per day&quot; = mean(total_steps,na.rm = T))]
 </code></pre>
 
 <pre><code>##    median number of steps per day mean number of steps per day
-## 1:                              0                      37.3826
+## 1:                       10766.19                     10766.19
 </code></pre>
 
 <h2>Are there Differences In Activity Patterns Between Weekdays and Weekends?</h2>

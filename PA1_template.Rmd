@@ -54,8 +54,8 @@ qplot(total_steps, data = totalstepsbyday, geom = "histogram",
 
 Let's calculate the mean and the median of total number of steps per day.
 ```{r}
-dat[,list("median number of steps per day" = median(steps,na.rm = T),
-          "mean number of steps per day" = mean(steps,na.rm = T))]
+totalstepsbyday[,list("median number of steps per day" = median(total_steps,na.rm = T),
+          "mean number of steps per day" = mean(total_steps,na.rm = T))]
 ```
 
 ## What is the Average Daily Activity Pattern
@@ -121,8 +121,8 @@ qplot(total_steps, data = imputedtotalstepsbyday, geom = "histogram",
 
 Let's calculate the mean and the median of total number of steps per day after imputing missing values.
 ```{r}
-imputeddat[,list("median number of steps per day" = median(steps,na.rm = T),
-          "mean number of steps per day" = mean(steps,na.rm = T))]
+imputedtotalstepsbyday[,list("median number of steps per day" = median(total_steps,na.rm = T),
+          "mean number of steps per day" = mean(total_steps,na.rm = T))]
 ```
 
 ## Are there Differences In Activity Patterns Between Weekdays and Weekends?

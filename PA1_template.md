@@ -12,33 +12,15 @@ I download the activity dataset from the link given by the assignment. I then un
 
 ```r
 library(ggplot2, quietly = T)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.1.2
-```
-
-```r
 library(data.table, quietly = T)
-```
 
-```
-## Warning: package 'data.table' was built under R version 3.1.2
-```
-
-```
-## data.table 1.9.4  For help type: ?data.table
-## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
-```
-
-```r
 download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",
               destfile = "activity.zip")
 
 unzip("activity.zip")
 ```
 
-The activity file was downloaded on 2015-02-14 13:43:54. I will use the data.table package to do the required calculations. 
+The activity file was downloaded on 2015-02-14 14:01:17. I will use the data.table package to do the required calculations. 
 
 
 ```r
@@ -91,13 +73,13 @@ qplot(total_steps, data = totalstepsbyday, geom = "histogram",
 Let's calculate the mean and the median of total number of steps per day.
 
 ```r
-dat[,list("median number of steps per day" = median(steps,na.rm = T),
-          "mean number of steps per day" = mean(steps,na.rm = T))]
+totalstepsbyday[,list("median number of steps per day" = median(total_steps,na.rm = T),
+          "mean number of steps per day" = mean(total_steps,na.rm = T))]
 ```
 
 ```
 ##    median number of steps per day mean number of steps per day
-## 1:                              0                      37.3826
+## 1:                          10395                      9354.23
 ```
 
 ## What is the Average Daily Activity Pattern
@@ -291,13 +273,13 @@ qplot(total_steps, data = imputedtotalstepsbyday, geom = "histogram",
 Let's calculate the mean and the median of total number of steps per day after imputing missing values.
 
 ```r
-imputeddat[,list("median number of steps per day" = median(steps,na.rm = T),
-          "mean number of steps per day" = mean(steps,na.rm = T))]
+imputedtotalstepsbyday[,list("median number of steps per day" = median(total_steps,na.rm = T),
+          "mean number of steps per day" = mean(total_steps,na.rm = T))]
 ```
 
 ```
 ##    median number of steps per day mean number of steps per day
-## 1:                              0                      37.3826
+## 1:                       10766.19                     10766.19
 ```
 
 ## Are there Differences In Activity Patterns Between Weekdays and Weekends?
